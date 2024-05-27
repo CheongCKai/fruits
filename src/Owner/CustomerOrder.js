@@ -4,12 +4,13 @@ import { getDocs, collection, doc, updateDoc } from 'firebase/firestore';
 import { CustomerDetailTable, OwnerViewCusContainer } from './OwnerStyle';
 import { ButtonAdd, ButtonEdit } from './OwnerStyle';
 import SortToggle from '../Components/SortToggle';
-import { sortByDate } from '../Components/SortFunctions';
-
+import { sortByDate, sortByCompletion } from '../Components/SortFunctions';
 
 const CustomerOrder = () => {
     const [orders, setOrders] = useState([]);
     const [orderToUpdate, setOrderToUpdate] = useState(null);
+    const [isLatestFirst, setIsLatestFirst] = useState(true);
+    const [customerNames, setCustomerNames] = useState({});
     
     
     useEffect(() => {
@@ -26,6 +27,24 @@ const CustomerOrder = () => {
       fetchOrders();
     }, []);
 
+    //query the customeruid from "user" based on the "order"
+    useEffect(() => {
+      const fetchUserNames = async () => {
+        try {
+          const querySnapshot = await getDocs(collection(db, 'users'));
+          const usersData = querySnapshot.docs.reduce((acc, doc) => {
+            acc[doc.id] = doc.data().name; 
+            return acc;
+          }, {});
+          setCustomerNames(usersData);
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      };
+    
+      fetchUserNames();
+    }, []);
+
     const formatDate = (date) => {
       return date.toLocaleString('en-GB', {
           day: '2-digit',
@@ -37,6 +56,8 @@ const CustomerOrder = () => {
           hour12: true,
       });
   };
+
+  //checkbox for orderstatus, complete or not
     const handleCheckboxChange = (order) => {
       setOrderToUpdate(order);
     };
@@ -61,6 +82,18 @@ const CustomerOrder = () => {
       }
     };
 
+    // Sorting orders by date
+    const toggleSortOrder = () => {
+      setIsLatestFirst(!isLatestFirst);
+    };
+  
+    const sortedOrders = [...orders].sort((a, b) => {
+      const dateA = a.purchasedate.toDate();
+      const dateB = b.purchasedate.toDate();
+      return isLatestFirst ? dateB - dateA : dateA - dateB;
+    });
+    
+
     return (
         <OwnerViewCusContainer>
             <h2>Order Details</h2>
@@ -68,16 +101,31 @@ const CustomerOrder = () => {
             <CustomerDetailTable>
             <thead>
           <tr>
-            <th>Order Name</th>
+            <th>Customer Name</th>
+            <th>Fruits Ordered</th>
             <th>Quantity</th>
             <th>Total Cost</th>
-            <th>Purchase Date</th>
-            <th>Order Status</th>
+            <th>Purchase Date
+            <SortToggle 
+                 isToggled={isLatestFirst}
+                 toggleSortOrder={toggleSortOrder}
+               />
+            </th>
+            <th>Order Status
+              {/* <SortToggle
+               items={sortedOrders} // Pass sortedOrders to SortToggle instead of orders
+               setSortedItems={setSortedOrders}
+               sortFunction={sortByCompletion}
+               sortParams={[sortCompletedFirst]}
+             /> */}
+            </th>
           </tr>
         </thead>
         <tbody>
-          {orders.map(order => (
+          {/* SortedOrder instead of just order if want to do sorting */}
+          {sortedOrders.map(order => (
             <tr key={order.id}>
+              <td>{customerNames[order.customerUid]}</td>
               <td>
                 {order.order.map(item => (
                   <div key={item.fruit}>{item.fruit}</div>
@@ -88,9 +136,17 @@ const CustomerOrder = () => {
                   <div key={item.fruit}>{item.quantity}</div>
                 ))}
               </td>
+
               <td>${order.totalCost}</td>
+
               <td>{formatDate(order.purchasedate.toDate())}</td>
-              <td> {order.status}
+                {/* Font color for status */}
+              <td style={{ 
+                color: order.status === 'Completed' ? 'green' : 'red', 
+                fontWeight: order.status === 'Completed' ? 'bold' : 'bold' 
+              }}>
+
+                {order.status}
                 {order.status === 'Not Completed' ? (
                   <>
                     <input

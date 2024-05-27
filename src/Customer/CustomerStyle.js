@@ -127,3 +127,42 @@ export const ToggleButton = styled.button`
     background-color: #28a745;
   }
 `;
+
+
+export const PageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+export const HeaderContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+`;
+
+export const ContentContainer = styled.div`
+  width: 100%;
+`;
+
+export const HeaderContent = styled.h1`
+  text-align: center;
+  margin: 0;
+`;
+
+export const ButtonSignOut = styled.button`
+  position: absolute;
+  right: 50px;
+  padding: 10px 20px;
+  background-color: #FC4100;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 20px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  &:hover {
+    background-color: #FF0000;
+  }
+`;

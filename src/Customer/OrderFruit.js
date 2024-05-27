@@ -4,7 +4,7 @@ import { db } from '../Backend/Firebase/firebase';
 import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import { ButtonClear, ButtonReset, ButtonSubmit, ButtonsContainer, StyledTableFruit, TableContainer, TableTitle, TotalPrice } from './CustomerStyle';
 
-const TrackFruit = ({ fruits }) => {
+const OrderFruit = ({ fruits, userUid }) => {
   const initialSelectedQuantities = JSON.parse(localStorage.getItem('selectedQuantities')) || {};
   const [selectedQuantities, setSelectedQuantities] = useState(initialSelectedQuantities);
 
@@ -31,6 +31,7 @@ const TrackFruit = ({ fruits }) => {
       purchasedate: Timestamp.fromDate(new Date()),
       totalCost: totalPrice,
       status: "Not Completed",
+      customerUid: userUid,
     };
 
     try {
@@ -118,4 +119,4 @@ const TrackFruit = ({ fruits }) => {
   );
 };
 
-export default TrackFruit;
+export default OrderFruit;

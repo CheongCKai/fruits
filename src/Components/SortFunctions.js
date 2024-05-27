@@ -6,9 +6,9 @@ export const sortByDate = (orders, isLatestFirst) => {
     });
   };
   
-export const sortByCompletion = (tasks, isCompletedFirst) => {
-    return [...tasks].sort((a, b) => {
-      if (a.completed === b.completed) return 0;
-      return isCompletedFirst ? (a.completed ? -1 : 1) : (a.completed ? 1 : -1);
+export const sortByCompletion = (orders, isCompletedFirst) => {
+    return [...orders].sort((a, b) => {
+      if (a.status === b.status) return 0;
+      return isCompletedFirst ? (a.status === 'Completed' ? -1 : 1) : (a.status === 'Completed' ? 1 : -1);
     });
   };

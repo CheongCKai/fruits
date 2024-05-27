@@ -109,6 +109,10 @@ const StockUpdate = () => {
   };
 
   const handleDeleteFruit = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this fruit?");
+    if (!confirmDelete) {
+      return; // If cancels, do nothing
+    }
     try {
       await deleteDoc(doc(db, "Fruits", id));
       setFruits(fruits.filter((fruit) => fruit.id !== id));

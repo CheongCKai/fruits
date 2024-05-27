@@ -1,29 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../Backend/Firebase/firebase';
-import { getDocs, collection } from 'firebase/firestore';
+import { getDocs, collection, where } from 'firebase/firestore';
 import styled from 'styled-components';
 import { HistoryContainer, OrderTable, ToggleButton } from './CustomerStyle';
 import SortToggle from '../Components/SortToggle';
-import { sortByDate } from '../Components/SortFunctions';
 
-const OrderHistory = () => {
+// (userUid) passing as a prop object instead of a single parameter
+const OrderHistory = ({userUid}) => {
     const [orders, setOrders] = useState([]);
-    //const [isLatestFirst, setIsLatestFirst] = useState(true);
-    const [sortedOrders, setSortedOrders] = useState([]);
+    const [isLatestFirst, setIsLatestFirst] = useState(true);
+    //const [sortedOrders, setSortedOrders] = useState([]);
+
   
     useEffect(() => {
       const fetchOrders = async () => {
         try {
           const querySnapshot = await getDocs(collection(db, 'Orders'));
           const ordersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          setOrders(ordersData);
+          console.log('Fetched Orders:', ordersData); 
+
+          console.log('from the customer passing in userUid:', userUid);
+          //view customerID
+          ordersData.forEach(order => {
+            console.log('Customer UID:', order.customerUid);
+        });
+          //filter the order based on userUid
+          const userOrders = ordersData.filter(order => order.customerUid === userUid);
+          console.log('Filtered Orders:', userOrders);
+          setOrders(userOrders);
         } catch (error) {
           console.error('Error fetching order data:', error);
         }
       };
-  
       fetchOrders();
-    }, []);
+    }, [userUid]);
 
     const formatDate = (date) => {
       return date.toLocaleString('en-GB', {
@@ -36,16 +46,16 @@ const OrderHistory = () => {
           hour12: true,
       });
   };
-    // const toggleSortOrder = () => {
-    //     setIsLatestFirst(!isLatestFirst);
-    //   };
-    
-    //   // Sort orders by purchase date
-    //   const sortedOrders = [...orders].sort((a, b) => {
-    //     const dateA = a.purchasedate.toDate();
-    //     const dateB = b.purchasedate.toDate();
-    //     return isLatestFirst ? dateB - dateA : dateA - dateB;
-    //   });
+
+  const toggleSortOrder = () => {
+    setIsLatestFirst(!isLatestFirst);
+  };
+
+  const sortedOrders = [...orders].sort((a, b) => {
+    const dateA = a.purchasedate.toDate();
+    const dateB = b.purchasedate.toDate();
+    return isLatestFirst ? dateB - dateA : dateA - dateB;
+  });
 
     return (
         <HistoryContainer>
@@ -63,10 +73,8 @@ const OrderHistory = () => {
                     {isLatestFirst ?  "↑" : "↓"}
                 </ToggleButton> */}
                 <SortToggle 
-                 items={orders}
-                 setSortedItems={setSortedOrders}
-                 sortFunction={sortByDate}
-                 sortParams={[]} // No additional params needed for sortByDate
+                 isToggled={isLatestFirst}
+                toggleSortOrder={toggleSortOrder}
                />
             </th>
           </tr>
