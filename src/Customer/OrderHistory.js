@@ -4,6 +4,7 @@ import { getDocs, collection, where } from 'firebase/firestore';
 import styled from 'styled-components';
 import { HistoryContainer, OrderTable, ToggleButton } from './CustomerStyle';
 import SortToggle from '../Components/SortToggle';
+import ChatBox from '../Components/ChatBox';
 
 // (userUid) passing as a prop object instead of a single parameter
 const OrderHistory = ({userUid}) => {
@@ -59,8 +60,8 @@ const OrderHistory = ({userUid}) => {
 
     return (
         <HistoryContainer>
+          <ChatBox userUid={userUid}/>
             <h2>Fruit Transactions</h2>
-            
             <OrderTable>
             <thead>
           <tr>
@@ -69,9 +70,6 @@ const OrderHistory = ({userUid}) => {
             <th>Quantity</th>
             <th>Total Cost</th>
             <th>Purchase Date
-                {/* <ToggleButton onClick={toggleSortOrder}>
-                    {isLatestFirst ?  "↑" : "↓"}
-                </ToggleButton> */}
                 <SortToggle 
                  isToggled={isLatestFirst}
                 toggleSortOrder={toggleSortOrder}
@@ -80,7 +78,13 @@ const OrderHistory = ({userUid}) => {
           </tr>
         </thead>
         <tbody>
-          {sortedOrders.map(order => (
+        {sortedOrders.length === 0 ? (
+            <tr>
+                <td colSpan="5" 
+                style={{ fontSize: '22px',fontWeight: 'bold' }}>It's empty here...</td>
+            </tr>
+          ) : (
+          sortedOrders.map(order => (
             <tr key={order.id}>
               <td>
                 {order.order.map(item => (
@@ -100,7 +104,7 @@ const OrderHistory = ({userUid}) => {
               <td>${order.totalCost}</td>
               <td>{formatDate(order.purchasedate.toDate())}</td>
             </tr>
-          ))}
+          )))}
         </tbody>
             </OrderTable>
         </HistoryContainer>
