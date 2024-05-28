@@ -4,7 +4,7 @@ export const ChatContainer = styled.div`
   max-width: 600px;
   margin: 20px auto;
   border: 1px solid #ddd;
-  padding: 10px;
+  padding: 30px 70px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 `;
@@ -17,8 +17,9 @@ export const HeadingOfChatBox = styled.h2`
 export const MessageListChat = styled.ul`
   list-style-type: none;
   padding: 0;
-  max-height: 400px;
+  max-height: 300px;
   overflow-y: scroll;
+  
 `;
 
 export const MessageItem = styled.li`

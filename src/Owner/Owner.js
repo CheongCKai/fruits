@@ -9,6 +9,7 @@ import CustomerOrder from './CustomerOrder';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getAuth, signOut } from 'firebase/auth';
 import { ButtonSignOut } from '../Customer/CustomerStyle';
+import OwnerChatBox from '../Components/OwnerChatBox';
 
 const OwnerPage = () => {
   const [activeContent, setActiveContent] = useState("home");
@@ -16,6 +17,9 @@ const OwnerPage = () => {
   const navigate = useNavigate();
   
   const userName = localStorage.getItem('userName') || 'Owner';
+  const auth = getAuth();
+  const user = auth.currentUser;
+  const userUid = user ? user.uid : null;
 
   const handleSignOut = async () => {
     try {
@@ -66,7 +70,9 @@ const OwnerPage = () => {
       )}
 
       {activeContent === "enquiries" && (
-        <h1>hi</h1>
+        <>
+        <OwnerChatBox userUid={userUid}/>
+        </>
       )}
       
     </div>
