@@ -28,17 +28,17 @@ const ChatBox = ({ userUid }) => {
     useEffect(() => {
         const q = query(collection(db, 'messages'), orderBy('timestamp', 'asc'), limit(50));
         const unsubscribe = onSnapshot(q, (snapshot) => {
-            const fetchedMessages = snapshot.docs.map((doc) => ({ 
-                id: doc.id, 
+            const fetchedMessages = snapshot.docs.map((doc) => ({
+                id: doc.id,
                 ...doc.data(),
                 username: userNames[doc.data().userUid] || 'Customer',
                 timestamp: doc.data().timestamp.toDate(),
-            })).filter(message => message.userUid === userUid); // Filter messages by userUid same as the orderHistory function
+            })).filter(message => message.userUid === userUid || message.recipient === userUid);
             setMessages(fetchedMessages);
         });
 
         return () => unsubscribe();
-    }, [userNames]); 
+    }, [userNames, userUid]);
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
@@ -48,7 +48,7 @@ const ChatBox = ({ userUid }) => {
             const docRef = await addDoc(collection(db, 'messages'), {
                 text: newMessage,
                 userUid: userUid,
-                recipient: "Admin",
+                recipient: "eGSa2IGXhzPJ5hEnz8ta78DOs1F2", // Send message to Admin
                 timestamp: new Date(),
             });
             console.log('Message sent with ID: ', docRef.id);
@@ -71,28 +71,28 @@ const ChatBox = ({ userUid }) => {
 
     return (
         <div style={{
-            maxWidth: '600px', 
-            margin: '20px auto', 
-            border: '1px solid #ddd', 
-            padding: '10px', 
-            borderRadius: '8px', 
+            maxWidth: '600px',
+            margin: '20px auto',
+            border: '1px solid #ddd',
+            padding: '10px',
+            borderRadius: '8px',
             boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
         }}>
             <h2 style={{
-                textAlign: 'center', 
+                textAlign: 'center',
                 color: '#333'
             }}>Chat with Us!</h2>
-            <ul style={{ 
-                listStyleType: 'none', 
-                padding: 0, 
-                maxHeight: '400px', 
-                overflowY: 'scroll' 
+            <ul style={{
+                listStyleType: 'none',
+                padding: 0,
+                maxHeight: '400px',
+                overflowY: 'scroll'
             }}>
                 {messages.map((message) => (
-                    <li key={message.id} style={{ 
-                        marginBottom: '10px', 
-                        padding: '10px', 
-                        border: '1px solid #eee', 
+                    <li key={message.id} style={{
+                        marginBottom: '10px',
+                        padding: '10px',
+                        border: '1px solid #eee',
                         backgroundColor: message.userUid === userUid ? '#ccffcc' : '#f0f0f0',
                         borderRadius: '10px',
                         display: 'flex',
@@ -100,12 +100,12 @@ const ChatBox = ({ userUid }) => {
                         alignItems: message.userUid === userUid ? 'flex-end' : 'flex-start',
                         boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
                     }}>
-                        <div style={{ 
-                            marginBottom: '5px', 
-                            fontSize: '0.85em', 
+                        <div style={{
+                            marginBottom: '5px',
+                            fontSize: '0.85em',
                             color: '#666'
                         }}>
-                            <strong style={{ 
+                            <strong style={{
                                 color: message.userUid === userUid ? '#333' : '#000'
                             }}>{message.userUid === userUid ? 'You' : message.username}</strong>
                             <span style={{ marginLeft: '10px' }}>{formatDate(message.timestamp)}</span>
@@ -120,31 +120,31 @@ const ChatBox = ({ userUid }) => {
                     </li>
                 ))}
             </ul>
-            <form style={{ 
-                display: 'flex', 
-                marginTop: '10px' 
+            <form style={{
+                display: 'flex',
+                marginTop: '10px'
             }} onSubmit={handleSendMessage}>
                 <input
                     type="text"
                     placeholder="Type your message..."
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    style={{ 
-                        flex: 1, 
-                        padding: '10px', 
-                        fontSize: '16px', 
-                        borderRadius: '4px', 
+                    style={{
+                        flex: 1,
+                        padding: '10px',
+                        fontSize: '16px',
+                        borderRadius: '4px',
                         border: '1px solid #ccc'
                     }}
                 />
-                <button type="submit" style={{ 
-                    padding: '10px 20px', 
-                    fontSize: '16px', 
-                    backgroundColor: '#4caf50', 
-                    color: 'white', 
-                    border: 'none', 
-                    cursor: 'pointer', 
-                    borderRadius: '4px', 
+                <button type="submit" style={{
+                    padding: '10px 20px',
+                    fontSize: '16px',
+                    backgroundColor: '#4caf50',
+                    color: 'white',
+                    border: 'none',
+                    cursor: 'pointer',
+                    borderRadius: '4px',
                     marginLeft: '5px'
                 }}>Send</button>
             </form>

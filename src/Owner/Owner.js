@@ -9,11 +9,14 @@ import CustomerOrder from './CustomerOrder';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getAuth, signOut } from 'firebase/auth';
 import { ButtonSignOut } from '../Customer/CustomerStyle';
+import OwnerChatBox from '../Components/OwnerChatBox';
+import { getCurrentUserUid } from '../services/auth'; 
 
 const OwnerPage = () => {
   const [activeContent, setActiveContent] = useState("home");
   const location = useLocation();
   const navigate = useNavigate();
+  const [userUid, setUserUid] = useState(null);
   
   const userName = localStorage.getItem('userName') || 'Owner';
 
@@ -66,7 +69,9 @@ const OwnerPage = () => {
       )}
 
       {activeContent === "enquiries" && (
-        <h1>hi</h1>
+        <>
+        {userUid && <OwnerChatBox userUid={userUid} />}
+        </>
       )}
       
     </div>
