@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../Backend/Firebase/firebase';
-import { collection, addDoc, query, orderBy, limit, onSnapshot, getDocs } from 'firebase/firestore';
-import { ChatContainer, HeadingOfChatBox, MessageInfo, MessageInput, MessageItem, MessageListChat, MessageText, SendButton, SendMessageForm } from './ChatBoxStyle';
+import { collection, addDoc, query, orderBy, onSnapshot, getDocs } from 'firebase/firestore';
+import { 
+    ChatContainer, 
+    HeadingOfChatBox, 
+    MessageInfo, 
+    MessageInput, 
+    MessageItem, 
+    MessageListChat, 
+    MessageText, 
+    SendButton, 
+    SendMessageForm 
+} from './ChatBoxStyle';
 
 const ChatBox = ({ userUid }) => {
     const [messages, setMessages] = useState([]);
@@ -32,17 +42,19 @@ const ChatBox = ({ userUid }) => {
             const fetchedMessages = snapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data(),
-                username: doc.data().senderType === 'admin' ? 'Admin' : (userNames[doc.data().userUid] || 'Customer'),
+                username: userNames[doc.data().userUid] || 'Customer',
                 timestamp: doc.data().timestamp.toDate(),
             })).filter(message => {
                 return (
                     message.userUid === userUid || // Messages sent by the current user
-                    (message.senderType === 'admin' && message.recipient === userUid) // Messages sent by admin to the current user
+                    (message.sender === 'admin' && message.recipient === userUid) // Messages sent by admin to the current user
                 );
             });
+
+            console.log('Fetched Messages:', fetchedMessages);
             setMessages(fetchedMessages);
         });
-    
+
         return () => unsubscribe();
     }, [userNames, userUid]);
 
@@ -54,7 +66,7 @@ const ChatBox = ({ userUid }) => {
             const docRef = await addDoc(collection(db, 'messages'), {
                 text: newMessage,
                 userUid: userUid,
-                recipient: "eGSa2IGXhzPJ5hEnz8ta78DOs1F2",
+                recipient: "admin",
                 senderType: 'customer',
                 timestamp: new Date(),
             });
@@ -81,27 +93,37 @@ const ChatBox = ({ userUid }) => {
             <HeadingOfChatBox>Chat With Us!</HeadingOfChatBox>
 
             <MessageListChat>
-                {messages.map((message)=>(
-                <MessageItem key={message.id} isUser={message.userUid === userUid}>
-                    <MessageInfo isUser={message.userUid === userUid}>
-                        <strong>{message.userUid === userUid ? 'You' : message.username}</strong>
-                        <span style={{ marginLeft: '10px' }}>{formatDate(message.timestamp)}</span>
-                    </MessageInfo>
-                    <MessageText isUser={message.userUid === userUid}>
-                        {message.text}
-                    </MessageText>
-                </MessageItem>
+                {messages.map((message) => (
+                    <MessageItem 
+                        key={message.id} 
+                        isUser={message.userUid === userUid} 
+                        isAdmin={message.sender === 'admin'}
+                    >
+                        <MessageInfo isUser={message.userUid === userUid}>
+                            <strong>
+                                {message.sender === 'admin' 
+                                    ? 'Admin' 
+                                    : message.userUid === userUid 
+                                    ? 'You' 
+                                    : message.username}
+                            </strong>
+                            <span style={{ marginLeft: '10px' }}>{formatDate(message.timestamp)}</span>
+                        </MessageInfo>
+                        <MessageText isUser={message.userUid === userUid} isAdmin={message.sender === 'admin'}>
+                            {message.text}
+                        </MessageText>
+                    </MessageItem>
                 ))}
             </MessageListChat>
-                <SendMessageForm onSubmit={handleSendMessage}>
-                    <MessageInput
-                        type="text"
-                        placeholder="Type your message..."
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                    />
-                    <SendButton type="submit">Send</SendButton>
-                </SendMessageForm>
+            <SendMessageForm onSubmit={handleSendMessage}>
+                <MessageInput
+                    type="text"
+                    placeholder="Type your message..."
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                />
+                <SendButton type="submit">Send</SendButton>
+            </SendMessageForm>
         </ChatContainer>
     );
 };

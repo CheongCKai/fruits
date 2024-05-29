@@ -19,18 +19,17 @@ export const MessageListChat = styled.ul`
   padding: 0;
   max-height: 300px;
   overflow-y: scroll;
-  
 `;
 
 export const MessageItem = styled.li`
   margin-bottom: 10px;
   padding: 10px;
   border: 1px solid #eee;
-  background-color: ${({ isUser }) => (isUser ? '#ccffcc' : '#f0f0f0')};
+  background-color: ${(props) => (props.isAdmin ? 'lightgrey' : 'lightgreen')};
   border-radius: 10px;
   display: flex;
   flex-direction: column;
-  align-items: ${({ isUser }) => (isUser ? 'flex-end' : 'flex-start')};
+  align-items: ${(props) => (props.isAdmin ? 'flex-start' : 'flex-end')};
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 `;
 
@@ -39,12 +38,17 @@ export const MessageInfo = styled.div`
   font-size: 0.85em;
   color: #666;
   color: ${({ isUser }) => (isUser ? '#333' : '#000')};
+  text-align: ${({ isUser }) => (isUser ? 'right' : 'left')};
 `;
 
 export const MessageText = styled.div`
   max-width: 80%;
   word-wrap: break-word;
-  text-align: ${({ isUser }) => (isUser ? 'right' : 'left')};
+  text-align: ${(props) => (props.isUser ? 'right' : 'left')};
+  background-color: ${(props) => (props.isAdmin ? '#543310' : '#A1DD70')};
+  padding: 8px;
+  border-radius: 8px;
+  color: ${(props) => (props.isAdmin ? 'white' : 'black')}; 
 `;
 
 export const SendMessageForm = styled.form`

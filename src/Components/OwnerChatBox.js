@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../Backend/Firebase/firebase';
-import { collection, query, where, orderBy, onSnapshot, addDoc } from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot, getDoc, doc, addDoc } from 'firebase/firestore';
 import {
     ChatContainerOwner,
-    ChatListOwner,
     ChatListItemOwner,
+    ChatListOwner,
     ChatWindowOwner,
     HeadingChatOwner,
     MessageInputFormOwner,
@@ -22,61 +22,93 @@ const OwnerChatBox = ({ userUid }) => {
 
     useEffect(() => {
         const fetchChatList = async () => {
+            console.log("Fetching chat list...");
             const q = query(collection(db, 'messages'), where('senderType', '==', 'customer'));
             const unsubscribe = onSnapshot(q, (snapshot) => {
-                const chats = snapshot.docs.map(doc => ({
-                    userUid: doc.data().userUid,
-                    username: '', // Initialize username
-                }));
+                const chats = snapshot.docs.reduce((acc, doc) => {
+                    const message = doc.data();
+                    const chat = acc.find(chat => chat.userUid === message.userUid);
+                    if (!chat) {
+                        acc.push({ userUid: message.userUid, username: '' }); // Initialize username as empty string
+                        console.log("New chat added:", message.userUid);
+                    }
+                    return acc;
+                }, []);
                 setChatList(chats);
             });
 
-            return () => unsubscribe();
+            return () => {
+                console.log("Unsubscribing chat list listener");
+                unsubscribe();
+            };
         };
-
         fetchChatList();
     }, []);
 
     useEffect(() => {
         const fetchMessages = async () => {
             if (selectedChat) {
+                console.log("Fetching messages for chat:", selectedChat.userUid);
                 const q = query(
                     collection(db, 'messages'),
-                    where('recipient', '==', userUid), // Filter messages for current admin userUid
-                    where('userUid', '==', selectedChat.userUid),
+                    where('sender', 'in', ['admin', selectedChat.userUid]), // Include both admin's and customer's messages
+                    where('recipient', 'in', ['admin', selectedChat.userUid]),
                     orderBy('timestamp', 'asc')
                 );
-                const unsubscribe = onSnapshot(q, (snapshot) => {
-                    const fetchedMessages = snapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data(),
-                        timestamp: doc.data().timestamp.toDate(),
+                const unsubscribe = onSnapshot(q, async (snapshot) => {
+                    const fetchedMessages = await Promise.all(snapshot.docs.map(async (doc) => {
+                        const messageData = doc.data();
+                        return {
+                            id: doc.id,
+                            ...messageData,
+                            timestamp: messageData.timestamp.toDate(),
+                        };
                     }));
+                    console.log("Messages fetched:", fetchedMessages);
                     setMessages(fetchedMessages);
                 });
 
-                return () => unsubscribe();
+                return () => {
+                    console.log("Unsubscribing message listener for chat:", selectedChat.userUid);
+                    unsubscribe();
+                };
             }
         };
 
         fetchMessages();
-    }, [selectedChat, userUid]);
+    }, [selectedChat]);
+
+    useEffect(() => {
+        const fetchCustomerName = async () => {
+            if (selectedChat) {
+                console.log("Fetching customer name for UID:", selectedChat.userUid);
+                try {
+                    const userDoc = await getDoc(doc(db, 'users', selectedChat.userUid));
+                    const username = userDoc.exists() ? userDoc.data().name : 'Customer';
+                    console.log("Customer name fetched:", username);
+                    setChatList(prevChatList => prevChatList.map(chat => (
+                        chat.userUid === selectedChat.userUid ? { ...chat, username: username } : chat
+                    )));
+                } catch (error) {
+                    console.error('Error fetching customer name:', error);
+                }
+            }
+        };
+
+        fetchCustomerName();
+    }, [selectedChat]);
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
-        if (newMessage.trim() === '' || !selectedChat) return;
-
-        try {
+        if (newMessage.trim() && selectedChat) {
             await addDoc(collection(db, 'messages'), {
                 text: newMessage,
-                userUid: userUid,
                 recipient: selectedChat.userUid,
-                senderType: 'admin',
+                sender: 'admin',
                 timestamp: new Date(),
+                userUid: selectedChat.userUid,
             });
             setNewMessage('');
-        } catch (error) {
-            console.error('Error sending message:', error);
         }
     };
 
@@ -94,32 +126,21 @@ const OwnerChatBox = ({ userUid }) => {
     return (
         <ChatContainerOwner>
             <HeadingChatOwner>Customer's Enquiries</HeadingChatOwner>
-
             <ChatListOwner>
-                {chatList.map((chat) => (
-                    <ChatListItemOwner
-                        key={chat.userUid}
-                        onClick={() => setSelectedChat(chat)}
-                        active={selectedChat && selectedChat.userUid === chat.userUid}
-                    >
+                {chatList.map(chat => (
+                    <ChatListItemOwner key={chat.userUid} onClick={() => setSelectedChat(chat)}>
                         <p>{chat.username || 'Customer'}</p>
                     </ChatListItemOwner>
                 ))}
             </ChatListOwner>
-
             {selectedChat && (
                 <ChatWindowOwner>
                     <MessageListOwner>
-                        {messages.map((message) => (
-                            <MessageItemOwner
-                                key={message.id}
-                                isUser={message.senderType === 'customer'}
-                            >
-                                <div>
-                                    <strong>{message.senderType === 'customer' ? selectedChat.username : 'You'}</strong>
-                                    <span style={{ marginLeft: '10px' }}>{formatDate(message.timestamp)}</span>
-                                </div>
-                                <div>{message.text}</div>
+                        {messages.map(message => (
+                            <MessageItemOwner key={message.id} isUser={message.sender === 'admin'}>
+                                <p>{formatDate(message.timestamp)}</p>
+                                <p><strong>{message.sender === 'admin' ? 'You' : chatList.find(chat => chat.userUid === selectedChat.userUid)?.username || 'Customer'}:</strong> {message.text}</p>
+                                
                             </MessageItemOwner>
                         ))}
                     </MessageListOwner>
