@@ -47,7 +47,7 @@ const ChatBox = ({ userUid }) => {
             })).filter(message => {
                 return (
                     message.userUid === userUid || // Messages sent by the current user
-                    (message.sender === 'admin' && message.recipient === userUid) // Messages sent by admin to the current user
+                    (message.senderType === 'admin' && message.recipient === userUid) // Messages sent by admin to the current user
                 );
             });
 
@@ -97,11 +97,11 @@ const ChatBox = ({ userUid }) => {
                     <MessageItem 
                         key={message.id} 
                         isUser={message.userUid === userUid} 
-                        isAdmin={message.sender === 'admin'}
+                        isAdmin={message.senderType === 'admin'}
                     >
                         <MessageInfo isUser={message.userUid === userUid}>
                             <strong>
-                                {message.sender === 'admin' 
+                                {message.senderType === 'admin' 
                                     ? 'Admin' 
                                     : message.userUid === userUid 
                                     ? 'You' 
@@ -109,7 +109,7 @@ const ChatBox = ({ userUid }) => {
                             </strong>
                             <span style={{ marginLeft: '10px' }}>{formatDate(message.timestamp)}</span>
                         </MessageInfo>
-                        <MessageText isUser={message.userUid === userUid} isAdmin={message.sender === 'admin'}>
+                        <MessageText isUser={message.userUid === userUid} isAdmin={message.senderType === 'admin'}>
                             {message.text}
                         </MessageText>
                     </MessageItem>

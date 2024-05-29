@@ -49,10 +49,10 @@ export const MessageItemOwner  = styled.li`
   padding: 5px 10px;
   border: 1px solid #eee;
   border-radius: 8px;
-  background-color: ${({ isUser }) => (isUser ? '#ccffcc' : '#f0f0f0')};
+  background-color: ${({ isUser }) => (isUser ? '#f0f0f0' : '#ccffcc')};
   display: flex;
   flex-direction: column;
-  align-items: ${({ isUser }) => (isUser ? 'flex-end' : 'flex-start')};
+  align-items: ${({ isUser }) => (isUser ? 'flex-start' : 'flex-end')};
   width: 100%;
 `;
 
