@@ -60,7 +60,6 @@ const OrderHistory = ({userUid}) => {
 
     return (
         <HistoryContainer>
-          <ChatBox userUid={userUid}/>
             <h2>Fruit Transactions</h2>
             <OrderTable>
             <thead>

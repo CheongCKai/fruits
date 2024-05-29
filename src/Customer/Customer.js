@@ -7,6 +7,7 @@ import { ButtonSignOut, ContentContainer, HeaderContainer, NavItem, PageContaine
 import OrderHistory from './OrderHistory';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getAuth, signOut } from 'firebase/auth';
+import ContactUs from './ContactUs';
 
 
 const CustomerPage = () => {
@@ -74,6 +75,12 @@ const CustomerPage = () => {
           >
             History
           </NavItem>
+          <NavItem
+            active={activeContent === "contactUs"}
+            onClick={() => setActiveContent("contactUs")}
+          >
+            Contact Us
+          </NavItem>
 
       {activeContent === "home" && (
         <FruitSelection fruits={fruits} />
@@ -86,6 +93,10 @@ const CustomerPage = () => {
       {activeContent === "history" && (
         <OrderHistory userUid={userUid}/>
       )}
+
+      {activeContent === "contactUs" && (
+              <ContactUs userUid={userUid}/>
+            )}
       </ContentContainer>
     </PageContainer>
   );
