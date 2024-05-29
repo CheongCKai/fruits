@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../Backend/Firebase/firebase';
 import { collection, addDoc, query, orderBy, onSnapshot, getDocs } from 'firebase/firestore';
 import { 
@@ -17,6 +17,7 @@ const ChatBox = ({ userUid }) => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [userNames, setUserNames] = useState({});
+    const messagesEndRef = useRef(null);
 
     // Fetch user names once and store them
     useEffect(() => {
@@ -88,6 +89,10 @@ const ChatBox = ({ userUid }) => {
         });
     };
 
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages]);
+
     return (
         <ChatContainer>
             <HeadingOfChatBox>Chat With Us!</HeadingOfChatBox>
@@ -114,6 +119,7 @@ const ChatBox = ({ userUid }) => {
                         </MessageText>
                     </MessageItem>
                 ))}
+                <div ref={messagesEndRef} /> 
             </MessageListChat>
             <SendMessageForm onSubmit={handleSendMessage}>
                 <MessageInput
