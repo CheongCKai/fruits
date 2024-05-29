@@ -95,3 +95,13 @@ export const HeadingChatOwner = styled.h2`
   margin-bottom: 20px;
   color: #333;
 `;
+
+export const MessagetextOwner = styled.div`
+padding: 8px;
+border-radius: 8px;  
+word-wrap: break-word;
+border: 1px solid #eee;
+background-color: ${(props) => (props.isAdmin ? '#006769' : '#AF8F6F')};
+color: ${(props) => (props.isAdmin ? 'white' : 'black')};
+`;
+

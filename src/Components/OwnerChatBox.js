@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../Backend/Firebase/firebase';
 import { collection, query, where, orderBy, onSnapshot, getDoc, doc, addDoc } from 'firebase/firestore';
 import {
@@ -11,6 +11,7 @@ import {
     MessageInputOwner,
     MessageItemOwner,
     MessageListOwner,
+    MessagetextOwner,
     SendButtonOwnerChat
 } from './OwnerChatStyle';
 
@@ -19,6 +20,7 @@ const OwnerChatBox = ({ userUid }) => {
     const [selectedChat, setSelectedChat] = useState(null);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+    const messagesEndRef = useRef(null);
 
     useEffect(() => {
         const fetchChatList = async () => {
@@ -117,10 +119,15 @@ const OwnerChatBox = ({ userUid }) => {
         });
     };
 
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages]);
+
     return (
         <>
         <HeadingChatOwner>Customer's Enquiries</HeadingChatOwner>
         <ChatContainerOwner>
+
             <ChatListOwner>
                 {chatList.map(chat => (
                     <ChatListItemOwner key={chat.userUid} onClick={() => setSelectedChat(chat)}
@@ -134,11 +141,12 @@ const OwnerChatBox = ({ userUid }) => {
                     <MessageListOwner>
                         {messages.map(message => (
                             <MessageItemOwner key={message.id} isUser={message.senderType !== 'admin'}>
-                                <p>{formatDate(message.timestamp)}</p>
-                                <p><strong>{message.senderType === 'admin' ? 'You' : chatList.find(chat => chat.userUid === selectedChat.userUid)?.username || 'Customer'}:</strong>
-                                 {message.text}</p>
+                                <p><strong>{message.senderType === 'admin' ? 'You' : chatList.find(chat => chat.userUid === selectedChat.userUid)?.username || 'Customer'}: </strong>{formatDate(message.timestamp)}</p>
+                                <MessagetextOwner isAdmin={message.senderType === 'admin'}>{message.text}</MessagetextOwner>
                             </MessageItemOwner>
                         ))}
+                        {/* auto scroll to end whenever new message  */}
+                        <div ref={messagesEndRef} /> 
                     </MessageListOwner>
                     <MessageInputFormOwner onSubmit={handleSendMessage}>
                         <MessageInputOwner
