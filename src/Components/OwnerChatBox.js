@@ -118,11 +118,13 @@ const OwnerChatBox = ({ userUid }) => {
     };
 
     return (
+        <>
+        <HeadingChatOwner>Customer's Enquiries</HeadingChatOwner>
         <ChatContainerOwner>
-            <HeadingChatOwner>Customer's Enquiries</HeadingChatOwner>
             <ChatListOwner>
                 {chatList.map(chat => (
-                    <ChatListItemOwner key={chat.userUid} onClick={() => setSelectedChat(chat)}>
+                    <ChatListItemOwner key={chat.userUid} onClick={() => setSelectedChat(chat)}
+                    isActive={selectedChat && selectedChat.userUid === chat.userUid}>
                         <p>{chat.username || 'Customer'}</p>
                     </ChatListItemOwner>
                 ))}
@@ -150,6 +152,7 @@ const OwnerChatBox = ({ userUid }) => {
                 </ChatWindowOwner>
             )}
         </ChatContainerOwner>
+        </>
     );
 };
 

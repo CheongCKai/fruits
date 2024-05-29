@@ -6,6 +6,8 @@ export const ChatContainerOwner = styled.div`
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  height: 800px;
+  display: flex;
 `;
 
 export const ChatListOwner = styled.ul`
@@ -16,22 +18,24 @@ export const ChatListOwner = styled.ul`
   overflow-y: scroll;
   flex: 1; 
   padding-right: 10px;
+  border-right: 1px solid #ddd;
 `;
 
 export const ChatListItemOwner = styled.li`
-  padding: 10px;
+  padding: 5px;
   border: 1px solid #ddd;
   border-radius: 8px;
   margin-bottom: 10px;
   cursor: pointer;
-  background-color: #f9f9f9;
+  background-color: ${({ isActive }) => (isActive ? '#ACD793' : '#f9f9f9')};
 
   &:hover {
-    background-color: #f1f1f1;
+    background-color: #ACD793;
   }
 `;
 
 export const ChatWindowOwner = styled.div`
+  flex: 3;
   border-top: 1px solid #ddd;
   padding-top: 20px;
   padding-left: 40px;
@@ -40,21 +44,24 @@ export const ChatWindowOwner = styled.div`
 export const MessageListOwner = styled.ul`
   list-style-type: none;
   padding: 0;
-  max-height: 300px;
+  max-height: 400px;
   overflow-y: scroll;
+  flex: 1; 
 `;
 
 export const MessageItemOwner  = styled.li`
   margin-bottom: 10px;
-  padding: 5px 10px;
-  border: 1px solid #eee;
+  padding: 1px 6px;
+  //border: 1px solid #eee;
   border-radius: 8px;
   background-color: ${({ isUser }) => (isUser ? '#f0f0f0' : '#ccffcc')};
-  display: flex;
+  //display: flex;
   flex-direction: column;
-  align-items: ${({ isUser }) => (isUser ? 'flex-start' : 'flex-end')};
-  width: 100%;
+  // align-items: ${({ isUser }) => (isUser ? 'flex-start' : 'flex-end')};
+  text-align: ${({ isUser }) => (isUser ? 'left' : 'right')};
+  max-width: 95%;
 `;
+
 
 export const MessageInputFormOwner  = styled.form`
   display: flex;
