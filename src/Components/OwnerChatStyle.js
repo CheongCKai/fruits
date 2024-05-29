@@ -14,6 +14,8 @@ export const ChatListOwner = styled.ul`
   margin: 0;
   max-height: 400px;
   overflow-y: scroll;
+  flex: 1; 
+  padding-right: 10px;
 `;
 
 export const ChatListItemOwner = styled.li`
@@ -32,6 +34,7 @@ export const ChatListItemOwner = styled.li`
 export const ChatWindowOwner = styled.div`
   border-top: 1px solid #ddd;
   padding-top: 20px;
+  padding-left: 40px;
 `;
 
 export const MessageListOwner = styled.ul`
@@ -50,6 +53,7 @@ export const MessageItemOwner  = styled.li`
   display: flex;
   flex-direction: column;
   align-items: ${({ isUser }) => (isUser ? 'flex-end' : 'flex-start')};
+  width: 100%;
 `;
 
 export const MessageInputFormOwner  = styled.form`

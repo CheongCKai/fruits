@@ -32,7 +32,7 @@ const ChatBox = ({ userUid }) => {
             const fetchedMessages = snapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data(),
-                username: userNames[doc.data().userUid] || 'Customer',
+                username: doc.data().senderType === 'admin' ? 'Admin' : (userNames[doc.data().userUid] || 'Customer'),
                 timestamp: doc.data().timestamp.toDate(),
             })).filter(message => {
                 return (
@@ -42,7 +42,7 @@ const ChatBox = ({ userUid }) => {
             });
             setMessages(fetchedMessages);
         });
-
+    
         return () => unsubscribe();
     }, [userNames, userUid]);
 
@@ -54,7 +54,7 @@ const ChatBox = ({ userUid }) => {
             const docRef = await addDoc(collection(db, 'messages'), {
                 text: newMessage,
                 userUid: userUid,
-                recipient: "admin",
+                recipient: "eGSa2IGXhzPJ5hEnz8ta78DOs1F2",
                 senderType: 'customer',
                 timestamp: new Date(),
             });
