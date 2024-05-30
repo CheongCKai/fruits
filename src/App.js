@@ -12,7 +12,10 @@ function App() {
   return (
     <BrowserRouter>
         <div className="App">
-        <Navbar />
+
+        {/* for testing without having to log in */}
+        {/* <Navbar /> */}
+
         <Routes >
           <Route path="/" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
