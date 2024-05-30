@@ -1,5 +1,11 @@
-# Getting Started with Create React App
 ## Can be access Via public Domain: https://raidfruits.netlify.app/
+
+#Create New account or use current guest account: 
+user: test@gmail.com
+pw: test123
+
+owner: admin@gmail.com
+pw: admin123
 
 ## Available Scripts
 
