@@ -96,7 +96,7 @@ const ChatBox = ({ userUid }) => {
     return (
         <ChatContainer>
             <HeadingOfChatBox>Chat With Us!</HeadingOfChatBox>
-
+            <p>We Will Reply As Soon As Possible</p>
             <MessageListChat>
                 {messages.map((message) => (
                     <MessageItem 

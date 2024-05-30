@@ -166,3 +166,59 @@ export const ButtonSignOut = styled.button`
     background-color: #FF0000;
   }
 `;
+
+//FAQ
+
+export const FAQContainer = styled.div`
+  width: 50%;              
+  margin: 20px auto;       
+  padding: 20px;           
+  border: 1px solid #ddd;  
+  border-radius: 8px;      
+  background-color: #f9f9f9; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Box shadow for a slight depth effect
+`;
+
+export const FAQHeader = styled.h2`
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+`;
+
+export const FAQItem = styled.div`
+  width: 100%; 
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  margin-bottom: 10px;
+`;
+
+
+export const FAQQuestion = styled.h4`
+  cursor: pointer;
+  width: 70%;
+  max-width: 800px;
+  margin: 0;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+ 
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
+export const FAQAnswer = styled.p`
+  margin: 0;
+  padding: 10px;
+  background-color: #fff;
+  border: 8px solid #ddd;
+  border-radius: 4px;
+  margin-top: 5px;
+  width: 70%;
+  text-align: center;
+  max-width: 800px;
+`;
