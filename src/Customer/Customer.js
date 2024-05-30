@@ -42,7 +42,7 @@ const CustomerPage = () => {
       const auth = getAuth();
       await signOut(auth);
       localStorage.removeItem('userName');
-      navigate('/');
+      navigate('/', { replace: true });
     } catch (error) {
       console.error('Error signing out:', error.message);
     }

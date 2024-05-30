@@ -31,10 +31,10 @@ const Login = () => {
         const userType = userData.type;
         if (userType === "admin") {
           localStorage.setItem('userName', userData.name);
-          navigate("/owner");
+          navigate("/owner", { replace: true });
         } else {
           localStorage.setItem('userName', userData.name);
-          navigate("/customer");
+          navigate("/customer", { replace: true });
         }
       } else {
         console.log("User data not found.");
