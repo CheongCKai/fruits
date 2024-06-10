@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { db, doc, getDoc } from "../Backend/Firebase/firebase";
 import { LoginContainer, FormLogin, LoginInput, ButtonLogin, LinkLogin, TitleLogin, SignInErrorText } from './LoginPageStyle';  
 import PasswordToggle from "../Components/PasswordToggle";
@@ -81,7 +81,9 @@ const Login = () => {
         </ButtonLogin>
       </FormLogin>
       <p>
-        Don't have an account? <LinkLogin href="/SignUp">Sign up here</LinkLogin>.
+        Don't have an account? 
+        <Link to="/Signup">Sign Up Here</Link>
+        {/* <LinkLogin href="/SignUp">Sign up here</LinkLogin>. */}
       </p>
     </LoginContainer>
   );
