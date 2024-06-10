@@ -81,7 +81,7 @@ const Login = () => {
         </ButtonLogin>
       </FormLogin>
       <p>
-        Don't have an account? <LinkLogin href="/signup">Sign up here</LinkLogin>.
+        Don't have an account? <LinkLogin href="/SignUp">Sign up here</LinkLogin>.
       </p>
     </LoginContainer>
   );
