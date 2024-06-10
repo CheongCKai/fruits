@@ -14,7 +14,7 @@ function App() {
         <div className="App">
 
         {/* for testing without having to log in */}
-        {/* <Navbar /> */}
+        <Navbar />
 
         <Routes >
           <Route path="/" element={<Login />} />

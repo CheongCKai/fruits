@@ -1,27 +1,7 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import { db } from "../Backend/Firebase/firebase";
-import {
-  getDocs,
-  collection,
-  updateDoc,
-  doc,
-  deleteDoc,
-  addDoc,
-} from "firebase/firestore";
-import {
-  StyledTableFruit,
-  TableContainer,
-  TableTitle,
-} from "../Customer/CustomerStyle";
-import {
-  AddFruitContainer,
-  ButtonAdd,
-  ButtonEdit,
-  ButtonSave,
-  EditTable,
-  InputFruit,
-} from "./OwnerStyle";
+import React, { useEffect, useState } from "react";
+import api from "../api";
+import { StyledTableFruit, TableContainer, TableTitle } from "../Customer/CustomerStyle";
+import { AddFruitContainer, ButtonEdit, ButtonSave, EditTable } from "./OwnerStyle";
 import AddFruit from "./AddStock";
 
 const StockUpdate = () => {
@@ -32,12 +12,8 @@ const StockUpdate = () => {
   useEffect(() => {
     const fetchFruits = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "Fruits"));
-        const fruitData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setFruits(fruitData);
+        const response = await api.get('/fruits');
+        setFruits(response.data);
       } catch (error) {
         console.error("Error fetching fruit data:", error);
       }
@@ -46,7 +22,6 @@ const StockUpdate = () => {
     fetchFruits();
   }, []);
 
-  // Validation function for individual fruit in edit mode
   const validateCurrentFruit = (index) => {
     const fruit = fruits[index];
     const errors = {};
@@ -76,16 +51,14 @@ const StockUpdate = () => {
     updatedFruits[index][name] = value;
     setFruits(updatedFruits);
 
-        // Validate the current fruit and update errors state
-        const currentErrors = validateCurrentFruit(index);
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          [index]: currentErrors,
-        }));
+    const currentErrors = validateCurrentFruit(index);
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [index]: currentErrors,
+    }));
   };
 
   const handleSave = async () => {
-    // Check if there are any errors from handleInputChange
     const hasEditErrors = fruits.some((fruit, index) => Object.keys(validateCurrentFruit(index)).length > 0);
     
     if (hasEditErrors) {
@@ -95,10 +68,10 @@ const StockUpdate = () => {
 
     try {
       for (const fruit of fruits) {
-        const fruitDoc = doc(db, "Fruits", fruit.id);
-        await updateDoc(fruitDoc, {
+        await api.put(`/fruits/${fruit.id}`, {
           fruits: fruit.fruits,
           price: fruit.price,
+          stock: fruit.stock,
           place: fruit.place,
         });
       }
@@ -111,12 +84,11 @@ const StockUpdate = () => {
   const handleDeleteFruit = async (id) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this fruit?");
     if (!confirmDelete) {
-      return; // If cancels, do nothing
+      return;
     }
     try {
-      await deleteDoc(doc(db, "Fruits", id));
+      await api.delete(`/fruits/${id}`);
       setFruits(fruits.filter((fruit) => fruit.id !== id));
-
     } catch (error) {
       console.error("Error deleting fruit:", error);
     }

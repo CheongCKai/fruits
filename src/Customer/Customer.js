@@ -8,7 +8,6 @@ import OrderHistory from './OrderHistory';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getAuth, signOut } from 'firebase/auth';
 import ContactUs from './ContactUs';
-import FruitFAQ from './CustomerFAQ';
 
 
 const CustomerPage = () => {
@@ -42,7 +41,7 @@ const CustomerPage = () => {
       const auth = getAuth();
       await signOut(auth);
       localStorage.removeItem('userName');
-      navigate('/', { replace: true });
+      navigate('/');
     } catch (error) {
       console.error('Error signing out:', error.message);
     }
@@ -77,12 +76,6 @@ const CustomerPage = () => {
             History
           </NavItem>
           <NavItem
-            active={activeContent === "faq"}
-            onClick={() => setActiveContent("faq")}
-          >
-            FAQ
-          </NavItem>
-          <NavItem
             active={activeContent === "contactUs"}
             onClick={() => setActiveContent("contactUs")}
           >
@@ -101,13 +94,9 @@ const CustomerPage = () => {
         <OrderHistory userUid={userUid}/>
       )}
 
-      {activeContent === "faq" && (
-        <FruitFAQ/>
-      )}
-
       {activeContent === "contactUs" && (
-          <ContactUs userUid={userUid}/>
-      )}
+              <ContactUs userUid={userUid}/>
+            )}
       </ContentContainer>
     </PageContainer>
   );

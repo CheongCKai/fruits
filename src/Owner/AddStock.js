@@ -1,8 +1,5 @@
-// AddFruit.js
-
 import React, { useState } from 'react';
-import { addDoc, collection } from 'firebase/firestore';
-import { db } from '../Backend/Firebase/firebase';
+import api from '../api'; 
 import { InputFruit, ButtonAdd } from './OwnerStyle';
 
 const AddFruit = ({ setFruits, fruits }) => {
@@ -52,8 +49,8 @@ const AddFruit = ({ setFruits, fruits }) => {
       return;
     }
     try {
-      const docRef = await addDoc(collection(db, 'Fruits'), newFruit);
-      const updatedFruits = [...fruits, { id: docRef.id, ...newFruit }];
+      const response = await api.post('/fruits', newFruit);
+      const updatedFruits = [...fruits, { id: response.data.id, ...newFruit }];
       setFruits(updatedFruits);
       setNewFruit({ fruits: '', price: '', stock: '', place: '' });
     } catch (error) {
