@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import FruitSelection from './FruitsCollection';
 import OrderFruit from './OrderFruit';
-import { db } from '../Backend/Firebase/firebase';
+import api from '../api';
 import { getDocs, collection } from 'firebase/firestore';
 import { ButtonSignOut, ContentContainer, HeaderContainer, NavItem, PageContainer,} from './CustomerStyle';
 import OrderHistory from './OrderHistory';
@@ -21,13 +21,13 @@ const CustomerPage = () => {
   const user = auth.currentUser;
   const userUid = user ? user.uid : null;
   
-  console.log(location.state);
-  useEffect(() => {
+  // console.log(location.state);
+
+useEffect(() => {
     const fetchFruits = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'Fruits'));
-        const fruitData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setFruits(fruitData);
+        const response = await api.get('/fruits');
+        setFruits(response.data);
       } catch (error) {
         console.error('Error fetching fruit data:', error);
       }
@@ -35,6 +35,7 @@ const CustomerPage = () => {
 
     fetchFruits();
   }, []);
+
 
   const handleSignOut = async () => {
     try {

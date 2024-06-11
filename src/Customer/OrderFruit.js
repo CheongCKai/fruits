@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { db } from '../Backend/Firebase/firebase';
-import { addDoc, collection, Timestamp, updateDoc, doc } from 'firebase/firestore';
-import { ButtonClear, ButtonReset, ButtonSubmit, ButtonsContainer, StyledTableFruit, TableContainer, TableTitle, TotalPrice } from './CustomerStyle';
+import api from '../api';
+import { ButtonClear, ButtonSubmit, ButtonsContainer, StyledTableFruit, TableContainer, TableTitle, TotalPrice } from './CustomerStyle';
 
 const OrderFruit = ({ fruits, userUid }) => {
   const initialSelectedQuantities = JSON.parse(localStorage.getItem('selectedQuantities')) || {};
@@ -18,31 +16,13 @@ const OrderFruit = ({ fruits, userUid }) => {
     return total + quantity * fruit.price;
   }, 0);
 
-  //update the stock after customer purchase
-  const handleStockUpdate = async () => {
-    try {
-      await Promise.all(fruits.map(async (fruit) => {
-        const quantity = selectedQuantities[fruit.id] || 0;
-        const newStock = fruit.stock - quantity;
-
-        const fruitRef = doc(db, 'Fruits', fruit.id);
-        await updateDoc(fruitRef, { stock: newStock });
-      }));
-    } catch (error) {
-      console.error("Error updating stock:", error);
-      throw error; // Rethrow error to handle it in the handleSubmit function
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // Update stock first
-      await handleStockUpdate();
-
       // Prepare order data
       const order = fruits.map(fruit => ({
+        fruitId: fruit.id,
         fruit: fruit.fruits,
         price: fruit.price,
         quantity: selectedQuantities[fruit.id] || 0,
@@ -50,20 +30,18 @@ const OrderFruit = ({ fruits, userUid }) => {
 
       const orderData = {
         order,
-        purchasedate: Timestamp.fromDate(new Date()),
+        purchasedate: new Date().toISOString(),
         totalCost: totalPrice,
         status: "Not Completed",
         customerUid: userUid,
       };
 
-      await addDoc(collection(db, 'Orders'), orderData);
+      await api.post('/orders', orderData);
 
-      // Clear local state and storage
       setSelectedQuantities({});
       localStorage.removeItem('selectedQuantities');
       window.location.reload();
       alert("Order submitted successfully!");
-      
     } catch (error) {
       console.error("Error submitting order: ", error);
       alert("Failed to submit order. Please try again.");

@@ -22,8 +22,8 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(bodyParser.json());
 
-// Configure CORS to allow requests from your Netlify domain
-const allowedOrigins = ['https://raidfruits.netlify.app']; // Replace with your Netlify domain
+// Configure CORS to allow requests from Netlify domain
+const allowedOrigins = ['https://raidfruits.netlify.app']; 
 app.use(cors({
   origin: allowedOrigins
 }));
@@ -91,6 +91,7 @@ app.get('/orders', async (req, res) => {
   }
 });
 
+//customer adds an order and update stock count
 app.post('/orders', async (req, res) => {
   const { order, purchasedate, totalCost, status, customerUid } = req.body;
 
@@ -102,6 +103,7 @@ app.post('/orders', async (req, res) => {
       if (!fruitDoc.exists) {
         throw new Error(`Fruit with ID ${item.fruitId} not found`);
       }
+      //reduce stock count after customer purchase 
       const newStock = fruitDoc.data().stock - item.quantity;
       if (newStock < 0) {
         throw new Error(`Insufficient stock for fruit with ID ${item.fruitId}`);
@@ -154,6 +156,7 @@ app.delete('/orders/:id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 // Fruits Routes
 app.get('/fruits', async (req, res) => {
@@ -216,6 +219,8 @@ app.delete('/fruits/:id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+
 
 // Messages Routes
 app.get('/messages', async (req, res) => {
