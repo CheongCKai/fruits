@@ -8,7 +8,7 @@ import OrderHistory from './OrderHistory';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getAuth, signOut } from 'firebase/auth';
 import ContactUs from './ContactUs';
-
+import FruitFAQ from './CustomerFAQ';
 
 const CustomerPage = () => {
   const [fruits, setFruits] = useState([]);
@@ -77,6 +77,12 @@ useEffect(() => {
             History
           </NavItem>
           <NavItem
+            active={activeContent === "faq"}
+            onClick={() => setActiveContent("faq")}
+          >
+            FAQ
+          </NavItem>
+          <NavItem
             active={activeContent === "contactUs"}
             onClick={() => setActiveContent("contactUs")}
           >
@@ -94,6 +100,10 @@ useEffect(() => {
       {activeContent === "history" && (
         <OrderHistory userUid={userUid}/>
       )}
+
+      {activeContent === "faq" && (
+              <FruitFAQ/>
+            )}
 
       {activeContent === "contactUs" && (
               <ContactUs userUid={userUid}/>

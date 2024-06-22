@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../Backend/Firebase/firebase';
-import { collection, query, where, orderBy, onSnapshot, getDoc, doc, addDoc } from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot, getDoc, getDocs, doc, addDoc } from 'firebase/firestore';
 import {
     ChatContainerOwner,
     ChatListItemOwner,
@@ -20,6 +20,7 @@ const OwnerChatBox = ({ userUid }) => {
     const [selectedChat, setSelectedChat] = useState(null);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+    const [userNames, setUserNames] = useState({});
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
@@ -30,7 +31,7 @@ const OwnerChatBox = ({ userUid }) => {
                     const message = doc.data();
                     const existingChat = acc.find(chat => chat.userUid === message.userUid);
                     if (!existingChat) {
-                        acc.push({ userUid: message.userUid, username: '' }); // Initialize username as empty string
+                        acc.push({ userUid: message.userUid });
                     }
                     return acc;
                 }, []);
@@ -44,6 +45,19 @@ const OwnerChatBox = ({ userUid }) => {
         };
 
         fetchChatList();
+    }, []);
+
+    useEffect(() => {
+        const fetchUserNames = async () => {
+            const userDocs = await getDocs(collection(db, 'users'));
+            const users = userDocs.docs.reduce((acc, doc) => {
+                acc[doc.id] = doc.data().name || 'Customer';
+                return acc;
+            }, {});
+            setUserNames(users);
+        };
+
+        fetchUserNames();
     }, []);
 
     useEffect(() => {
@@ -72,25 +86,6 @@ const OwnerChatBox = ({ userUid }) => {
         };
 
         fetchMessages();
-    }, [selectedChat]);
-
-    useEffect(() => {
-        const fetchCustomerName = async () => {
-            if (selectedChat) {
-                try {
-                    const userDoc = await getDoc(doc(db, 'users', selectedChat.userUid));
-                    const username = userDoc.exists() ? userDoc.data().name : 'Customer';
-
-                    setChatList(prevChatList => prevChatList.map(chat => (
-                        chat.userUid === selectedChat.userUid ? { ...chat, username: username } : chat
-                    )));
-                } catch (error) {
-                    console.error('Error fetching customer name:', error);
-                }
-            }
-        };
-
-        fetchCustomerName();
     }, [selectedChat]);
 
     const handleSendMessage = async (e) => {
@@ -132,7 +127,7 @@ const OwnerChatBox = ({ userUid }) => {
                 {chatList.map(chat => (
                     <ChatListItemOwner key={chat.userUid} onClick={() => setSelectedChat(chat)}
                     isActive={selectedChat && selectedChat.userUid === chat.userUid}>
-                        <p>{chat.username || 'Customer'}</p>
+                        <p>{userNames[chat.userUid] || 'Customer'}</p>
                     </ChatListItemOwner>
                 ))}
             </ChatListOwner>
@@ -141,7 +136,7 @@ const OwnerChatBox = ({ userUid }) => {
                     <MessageListOwner>
                         {messages.map(message => (
                             <MessageItemOwner key={message.id} isUser={message.senderType !== 'admin'}>
-                                <p><strong>{message.senderType === 'admin' ? 'You' : chatList.find(chat => chat.userUid === selectedChat.userUid)?.username || 'Customer'}: </strong>{formatDate(message.timestamp)}</p>
+                                <p><strong>{message.senderType === 'admin' ? 'You' : userNames[message.userUid] || 'Customer'}: </strong>{formatDate(message.timestamp)}</p>
                                 <MessagetextOwner isAdmin={message.senderType === 'admin'}>{message.text}</MessagetextOwner>
                             </MessageItemOwner>
                         ))}

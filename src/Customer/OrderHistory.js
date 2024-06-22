@@ -74,6 +74,7 @@ const OrderHistory = ({userUid}) => {
                 toggleSortOrder={toggleSortOrder}
                />
             </th>
+            <th>Order Status</th>
           </tr>
         </thead>
         <tbody>
@@ -102,6 +103,9 @@ const OrderHistory = ({userUid}) => {
               </td>
               <td>${order.totalCost}</td>
               <td>{formatDate(order.purchasedate.toDate())}</td>
+              <td style={{ color: order.status === 'Completed' ? 'green' : 'black',
+                fontWeight: 'bold'
+               }}>{order.status}</td>
             </tr>
           )))}
         </tbody>
