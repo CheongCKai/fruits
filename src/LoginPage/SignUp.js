@@ -48,7 +48,7 @@ const Signup = () => {
           <LoginInput
             type="text"
             value={inputName}
-            placeholder="UserName"
+            placeholder="Your Name"
             onChange={(e) => setInputName(e.target.value)}
           />
         </label>

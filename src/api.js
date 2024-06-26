@@ -39,5 +39,3 @@ const api = axios.create({
 
 export default api;
 
-
-// Add other API functions as needed
